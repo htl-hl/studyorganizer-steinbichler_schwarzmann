@@ -2,13 +2,15 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    public ?int $id;
+    public ?string $username;
+    public ?string $password;
+    public ?string $authKey;
 
     private static $users = [
         '100' => [
@@ -31,6 +33,17 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
+
+    public static function tableName(): ?string
+    {
+        return 'USER';
+    }
+
+    public function getUser(): ?string
+    {
+        return $this->username;
+    }
+
     public static function findIdentity($id)
     {
         return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
@@ -56,7 +69,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      * @param string $username
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByUsername(string $username): ?User
     {
         foreach (self::$users as $user) {
             if (strcasecmp($user['username'], $username) === 0) {
@@ -78,7 +91,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function getAuthKey()
+    public function getAuthKey(): ?string
     {
         return $this->authKey;
     }
@@ -86,7 +99,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($authKey): ?string
     {
         return $this->authKey === $authKey;
     }
@@ -95,9 +108,9 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      * Validates password
      *
      * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return string|null if password provided is valid for current user
      */
-    public function validatePassword($password)
+    public function validatePassword(string $password): ?string
     {
         return $this->password === $password;
     }
