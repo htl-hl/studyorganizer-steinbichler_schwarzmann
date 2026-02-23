@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m260216_121424_TASK extends Migration
+class m260216_131642_TASK extends Migration
 {
     /**
      * {@inheritdoc}
@@ -53,7 +53,7 @@ class m260216_121424_TASK extends Migration
 
     public function down()
     {
-        echo "m260216_121424_TASK cannot be reverted.\n";
+        echo "m260216_131642_TASK cannot be reverted.\n";
 
         return false;
     }
