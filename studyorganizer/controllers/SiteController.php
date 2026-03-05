@@ -2,13 +2,14 @@
 
 namespace app\controllers;
 
+use app\models\RegisterForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
+use yii\web\NotFoundHttpException;
 
 class SiteController extends Controller
 {
@@ -61,7 +62,11 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['site/login']);
+        }
+
+        return $this->redirect(['task/index']);
     }
 
     /**
@@ -72,16 +77,35 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['task/index']);
         }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->redirect(['task/index']);
         }
 
         $model->password = '';
         return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionRegister()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['task/index']);
+        }
+
+        $model = new RegisterForm();
+
+        if ($model->load(Yii::$app->request->post()) && ($user = $model->register()) !== null) {
+
+            Yii::$app->user->login($user);
+            return $this->redirect(['task/index']);
+        }
+
+        return $this->render('register', [
             'model' => $model,
         ]);
     }
@@ -95,7 +119,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect(['site/login']);
     }
 
     /**
@@ -105,15 +129,7 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**
@@ -123,6 +139,6 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
-        return $this->render('about');
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }
