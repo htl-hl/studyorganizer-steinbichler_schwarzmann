@@ -12,9 +12,12 @@ class m260216_093702_USER extends Migration
     {
         $this->createTable("{{%USER}}", [
             'id' => $this->primaryKey(),
+            'email' => $this->string()->notNull()->unique(),
             'username' => $this->string()->notNull()->unique(),
             'passwordHash' => $this->string()->notNull(),
-            'role' => $this->string(20)->notNull(),
+            'authKey' => $this->string()->notNull()->unique(),
+            'accessToken' => $this->string()->notNull()->unique(),
+            'role' => $this->string(8)->notNull()->defaultValue("User"),
         ]);
     }
 

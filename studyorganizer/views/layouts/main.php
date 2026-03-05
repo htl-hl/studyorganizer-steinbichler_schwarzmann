@@ -1,16 +1,10 @@
 <?php
 
 /** @var yii\web\View $this */
-
 /** @var string $content */
 
 use app\assets\AppAsset;
-use app\widgets\Alert;
-use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
-use yii\bootstrap5\Nav;
-use yii\bootstrap5\NavBar;
-use app\models\User;
 
 AppAsset::register($this);
 
@@ -31,64 +25,31 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
 
-<header id="header">
-    <?php
-
-    NavBar::begin([
-            'brandLabel' => 'StudyOrganizer',
-            'brandUrl' => '',
-            'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
-    ]);
-        echo Nav::widget([
-                'options' => ['class' => 'navbar-nav'],
-                'items' => [
-                        ['label' => 'Tasks', 'url' => ['/task/index']],
-                        ['label' => 'About', 'url' => ['/site/about']],
-                        ['label' => 'Contact', 'url' => ['/site/contact']]
-                ]
-        ]);
-    try {
-        echo Nav::widget([
-                'options' => ['class' => 'navbar-nav ms-auto'],
-                'items' => [
-                        Yii::$app->user->isGuest
-                                ? ['label' => 'Login', 'url' => ['/site/login']]
-                                : '<li class="nav-item">'
-                                . Html::beginForm(['/site/logout'])
-                                . Html::submitButton(
-                                        'Logout (' . Yii::$app->user->identity->username . ')',
-                                        ['class' => 'nav-link btn btn-link logout']
-                                )
-                                . Html::endForm()
-                                . '</li>'
-                ]
-        ]);
-    } catch (Throwable $e) {
-
-    }
-
-    NavBar::end();
-    ?>
+<header class="border-bottom">
+    <div class="container py-3 d-flex justify-content-between align-items-center">
+        <div class="fw-bold">StudyOrganizer</div>
+        <div class="d-flex gap-2 align-items-center">
+            <?php if (Yii::$app->user->isGuest): ?>
+                <?= Html::a('Login', ['/site/login'], ['class' => 'btn btn-primary btn-sm']) ?>
+                <?= Html::a('Register', ['/site/register'], ['class' => 'btn btn-outline-primary btn-sm']) ?>
+            <?php else: ?>
+                <?= Html::a('Tasks', ['/task/index'], ['class' => 'btn btn-primary btn-sm']) ?>
+                <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'd-inline']) ?>
+                <?= Html::submitButton(
+                    'Logout (' . Html::encode(Yii::$app->user->identity->username) . ')',
+                    ['class' => 'btn btn-outline-secondary btn-sm']
+                ) ?>
+                <?= Html::endForm() ?>
+            <?php endif; ?>
+        </div>
+    </div>
 </header>
 
-<main id="main" class="flex-shrink-0" role="main">
+<main class="py-4">
     <div class="container">
-        <?php if (!empty($this->params['breadcrumbs'])): ?>
-            <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs']]) ?>
-        <?php endif ?>
-        <?= Alert::widget() ?>
         <?= $content ?>
     </div>
 </main>
-
-<footer id="footer" class="mt-auto py-3 bg-light">
-    <div class="container">
-        <div class="row text-muted">
-            <div class="col-md-6 text-center text-md-start">&copy; My Company <?= date('Y') ?></div>
-            <div class="col-md-6 text-center text-md-end"><?= Yii::powered() ?></div>
-        </div>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
 </body>
