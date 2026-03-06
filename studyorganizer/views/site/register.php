@@ -1,13 +1,14 @@
 <?php
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Register';
 ?>
-
+<div>
     <h1><?= Html::encode($this->title) ?></h1>
 
-<?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(); ?>
 
     <div class="form-group">
         <?= $form->field($model, 'username')->textInput(['placeholder' => 'Enter a Username']) ?>
@@ -35,8 +36,9 @@ $this->title = 'Register';
 
     <div class="form-group">
         <?= Html::submitButton('Register', ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Return', ['login'], ['class' => 'btn btn-secondary'])?>
     </div>
-
+</div>
 <?php ActiveForm::end(); ?>
 
 <style>
