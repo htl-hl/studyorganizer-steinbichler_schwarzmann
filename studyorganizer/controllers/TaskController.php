@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Subject;
 use app\models\Task;
 use app\models\TaskSearch;
 use yii\filters\AccessControl;
@@ -48,12 +49,10 @@ class TaskController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TaskSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $subjects = Subject::find()->with('tasks')->all();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'subjects' => $subjects,
         ]);
     }
 
