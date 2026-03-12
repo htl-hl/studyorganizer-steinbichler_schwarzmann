@@ -40,11 +40,11 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         $leftNavItems = [
             ['label' => 'Tasks', 'url' => ['/task/index']],
             ['label' => 'Subjects', 'url' => ['/subject/index']],
-            ['label' => 'Teachers', 'url' => ['/teacher/index']],
         ];
 
         if (Yii::$app->user->identity->isAdmin()) {
             $leftNavItems[] = ['label' => 'Users', 'url' => ['/user/index']];
+            $leftNavItems[] = ['label' => 'Teachers', 'url' => ['/teacher/index']];
         }
 
         $rightNavItems = [[
