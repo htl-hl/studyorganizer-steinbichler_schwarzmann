@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\User;
 use app\models\UserSearch;
+use Yii;
+use yii\db\Exception as DbException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -111,7 +113,16 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        try {
+            $deletedRows = $this->findModel($id)->delete();
+            if ($deletedRows) {
+                Yii::$app->session->setFlash('success', 'User deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'User could not be deleted.');
+            }
+        } catch (DbException $e) {
+            Yii::$app->session->setFlash('error', 'User could not be deleted because related records exist.');
+        }
 
         return $this->redirect(['index']);
     }

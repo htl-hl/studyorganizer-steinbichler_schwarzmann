@@ -16,8 +16,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'passwordHash')->textInput(['maxlength' => true]) ?>
-
     <?= $form->field($model, 'role')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
