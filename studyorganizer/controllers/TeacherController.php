@@ -2,8 +2,9 @@
 
 namespace app\controllers;
 
-use app\models\Teacher;
-use app\models\TeacherSearch;
+use app\models\RegisterForm;
+use app\models\User;
+use app\models\UserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,8 +39,9 @@ class TeacherController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TeacherSearch();
+        $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->query->andWhere(['role' => 'Teacher']);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -67,14 +69,13 @@ class TeacherController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Teacher();
+        $model = new RegisterForm();
+        $model->role = 'Teacher';
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) && ($user = $model->register()) !== null) {
+                return $this->redirect(['view', 'id' => $user->id]);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
@@ -93,8 +94,11 @@ class TeacherController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->role = 'Teacher';
+            if ($model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -125,7 +129,7 @@ class TeacherController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Teacher::findOne(['id' => $id])) !== null) {
+        if (($model = User::findOne(['id' => $id, 'role' => 'Teacher'])) !== null) {
             return $model;
         }
 

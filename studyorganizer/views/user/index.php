@@ -75,6 +75,7 @@ JS);
             </div>
         <?php else: ?>
             <?php foreach ($users as $user): ?>
+            <?php if (!$user->isTeacher()): ?>
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -99,6 +100,7 @@ JS);
                         </div>
                     </div>
                 </div>
+                <?php endif;?>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>

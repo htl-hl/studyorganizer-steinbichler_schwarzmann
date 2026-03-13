@@ -1,8 +1,7 @@
 <?php
 
-use app\models\Task;
+use yii\bootstrap5\Alert;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\Pjax;
 
 /** @var yii\web\View $this */
@@ -26,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
         <?php if (empty($subjects)) : ?>
             <div class="col-12">
-                <?php \yii\bootstrap5\Alert::widget([
+                <?php Alert::widget([
                         'options' => [
                                 'class' => 'alert-info',
                         ],

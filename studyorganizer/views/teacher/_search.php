@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var app\models\TeacherSearch $model */
+/** @var app\models\UserSearch $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
@@ -20,11 +20,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'firstname') ?>
+    <?= $form->field($model, 'username') ?>
 
-    <?= $form->field($model, 'lastname') ?>
+    <?= $form->field($model, 'email') ?>
 
-    <?= $form->field($model, 'isActive') ?>
+    <?= $form->field($model, 'role') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
