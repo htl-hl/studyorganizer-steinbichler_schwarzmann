@@ -40,19 +40,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0"><?= Html::encode($s->name) ?></h5>
-                            <span class="badge bg-secondary"><?= Html::encode($s->id) ?></span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill bg-dark"><?= Html::encode($s->id) ?></span>
+                                <?= Html::a($s->icondelete(), ['subject/delete', 'id' => $s->id], [
+                                        'class' => 'btn btn-sm btn-outline-danger',
+                                        'data' => [
+                                                'confirm' => 'Are you sure you want to delete this item?',
+                                                'method' => 'post',
+                                        ],
+                                ]) ?>
+                            </div>
                         </div>
                         <div class="card-body">
                             <?php if (!Yii::$app->user->isGuest && Yii::$app->user->can('Admin')): ?>
                                 <div class="mb-3">
                                     <?= Html::a($s->iconupdate(), ['subject/update', 'id' => $s->id], ['class' => 'btn btn-sm btn-light']) ?>
-                                    <?= Html::a($s->icondelete(), ['subject/delete', 'id' => $s->id], [
-                                        'class' => 'btn btn-sm btn-light',
-                                        'data' => [
-                                            'confirm' => 'Are you sure you want to delete this item?',
-                                            'method' => 'post',
-                                        ],
-                                    ]) ?>
                                 </div>
                             <?php endif; ?>
                             <h6>Tasks:</h6>
@@ -63,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <p class="text-muted">No tasks.</p>
+                                <p class="empty-task">No tasks.</p>
                             <?php endif; ?>
                         </div>
                         <div class="card-footer">

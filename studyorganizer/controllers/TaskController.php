@@ -72,15 +72,20 @@ class TaskController extends Controller
     /**
      * Creates a new Task model.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * @param int|null $subjectId
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreate($subjectId = null)
     {
         $model = new Task();
 
+        if ($subjectId !== null) {
+            $model->subjectId = $subjectId;
+        }
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['index']);
             }
         } else {
             $model->loadDefaultValues();

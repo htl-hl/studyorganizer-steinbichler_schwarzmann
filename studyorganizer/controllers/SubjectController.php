@@ -71,7 +71,7 @@ class SubjectController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['task/index']);
             }
         } else {
             $model->loadDefaultValues();
@@ -113,7 +113,7 @@ class SubjectController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['task/index']);
     }
 
     /**
