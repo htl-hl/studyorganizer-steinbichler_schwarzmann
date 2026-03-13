@@ -12,12 +12,14 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'id')->textInput()?>
+    <?= $form->field($model, 'username')->textInput(['placeholder' => 'Enter username'])?>
 
-    <?= $form->field($model, 'username')->textInput(['maxlength' => true])?>
+    <?= $form->field($model, 'email')->textInput(['placeholder' => 'example@gmail.com'])?>
+
+    <?= $form->field($model, 'password')->passwordInput(['placeholder' => '123456 is not safe'])?>
 
     <?= $form->field($model, 'role')->dropDownList(
-            ['Admin' => 'Admin', 'User' => 'User']
+            ['Admin' => 'Admin', 'User' => 'User', 'Teacher' => 'Teacher']
     )?>
 
     <div class="form-group">

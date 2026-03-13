@@ -10,6 +10,11 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     /**
+     * Plain-text password input (not stored).
+     */
+    public ?string $password = null;
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName(): string
@@ -23,7 +28,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules(): array
     {
         return [
-            [['email', 'username', 'passwordHash', 'authKey', 'accessToken', 'role'], 'required'],
+            [['email', 'username', 'role'], 'required'],
+            [['password'], 'required', 'when' => function ($model) {
+                return $model->isNewRecord;
+            }],
+            [['password'], 'string', 'min' => 6],
             [['email', 'username', 'passwordHash', 'authKey', 'accessToken'], 'string', 'max' => 255],
             [['role'], 'string', 'max' => 8],
             [['email'], 'unique'],
@@ -42,11 +51,34 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => Yii::t('app', 'ID'),
             'email' => Yii::t('app', 'Email'),
             'username' => Yii::t('app', 'Username'),
+            'password' => Yii::t('app', 'Password'),
             'passwordHash' => Yii::t('app', 'Password Hash'),
             'authKey' => Yii::t('app', 'Auth Key'),
             'accessToken' => Yii::t('app', 'Access Token'),
             'role' => Yii::t('app', 'Role'),
         ];
+    }
+
+    public function beforeSave($insert): bool
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if (!empty($this->password)) {
+            $this->setPassword($this->password);
+        }
+
+        if ($insert) {
+            if (empty($this->authKey)) {
+                $this->generateAuthKey();
+            }
+            if (empty($this->accessToken)) {
+                $this->accessToken = Yii::$app->security->generateRandomString();
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -84,6 +116,11 @@ class User extends ActiveRecord implements IdentityInterface
             return true;
         }
         return false;
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role === 'Teacher';
     }
 
     public function getAuthKey(): string

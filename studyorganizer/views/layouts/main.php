@@ -37,9 +37,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top'],
         ]);
 
-        $leftNavItems = [
-            ['label' => 'Tasks', 'url' => ['/task/index']],
-        ];
+        $leftNavItems = [];
 
         if (Yii::$app->user->identity->isAdmin()) {
             $leftNavItems[] = ['label' => 'Users', 'url' => ['/user/index']];
@@ -51,11 +49,12 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             'url' => ['/site/logout'],
             'linkOptions' => ['data-method' => 'post'],
         ]];
-
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav me-auto'],
-            'items' => $leftNavItems,
-        ]);
+        if (!$leftNavItems == null) {
+            echo Nav::widget([
+                    'options' => ['class' => 'navbar-nav me-auto'],
+                    'items' => $leftNavItems,
+            ]);
+        }
 
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav ms-auto'],

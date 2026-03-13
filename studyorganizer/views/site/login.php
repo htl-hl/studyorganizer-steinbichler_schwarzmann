@@ -12,45 +12,46 @@ $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+    <h1 class="mb-2"><?= Html::encode($this->title) ?></h1>
+    <p class="text-muted mb-0">Please fill out the following fields to login.</p>
+</div>
+<div class="card shadow-sm">
+    <div class="card-body p-4">
 
-    <div class="row">
-        <div class="col-lg-5">
+        <?php $form = ActiveForm::begin([
+                'id' => 'login-form',
+                'fieldConfig' => [
+                        'template' => "{label}\n{input}\n{error}",
+                        'labelOptions' => ['class' => 'form-label'],
+                        'inputOptions' => ['class' => 'form-control'],
+                        'errorOptions' => ['class' => 'invalid-feedback d-block'],
+                ],
+        ]); ?>
 
-            <?php $form = ActiveForm::begin([
-                    'id' => 'login-form',
-                    'fieldConfig' => [
-                            'template' => "{label}\n{input}\n{error}",
-                            'labelOptions' => ['class' => 'col-lg-1 col-form-label mr-lg-3'],
-                            'inputOptions' => ['class' => 'col-lg-3 form-control'],
-                            'errorOptions' => ['class' => 'col-lg-7 invalid-feedback'],
-                    ],
-            ]); ?>
+        <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+        <?= $form->field($model, 'password')->passwordInput() ?>
 
-            <?= $form->field($model, 'password')->passwordInput() ?>
+        <?= $form->field($model, 'rememberMe')->checkbox([
+                'template' => "<div class=\"form-check\">{input} {label}</div>\n<div>{error}</div>",
+                'labelOptions' => ['class' => 'form-check-label'],
+                'inputOptions' => ['class' => 'form-check-input'],
+        ]) ?>
 
-            <?= $form->field($model, 'rememberMe')->checkbox([
-                    'template' => "<div class=\"custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            ]) ?>
-
-            <div class="form-group">
-                <div>
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-                </div>
-            </div>
-
-            <?php ActiveForm::end(); ?>
-
-            <div class="form-group">
-                <div>
-                    <p>Don't have an account yet?</p>
-                    <?= Html::a('Sign Up', ['register'], ['class' => 'btn btn-primary'])?>
-                </div>
-            </div>
+        <div class="d-grid mt-3">
+            <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
         </div>
+
+        <?php ActiveForm::end(); ?>
+
+        <hr class="my-4">
+
+        <p class="text-center text-muted mb-3">Don't have an account yet?</p>
+        <div class="d-grid gap-2">
+            <?= Html::a('Sign Up', ['register'], ['class' => 'btn btn-outline-primary']) ?>
+                <?php // Teacher login is handled by normal login via role. ?>
+        </div>
+
     </div>
 </div>

@@ -18,7 +18,7 @@ class TeacherSearch extends Teacher
     {
         return [
             [['id', 'isActive'], 'integer'],
-            [['firstname', 'lastname'], 'safe'],
+            [['username'], 'safe'],
         ];
     }
 
@@ -63,8 +63,7 @@ class TeacherSearch extends Teacher
             'isActive' => $this->isActive,
         ]);
 
-        $query->andFilterWhere(['like', 'firstname', $this->firstname])
-            ->andFilterWhere(['like', 'lastname', $this->lastname]);
+        $query->andFilterWhere(['like', 'username', $this->username]);
 
         return $dataProvider;
     }

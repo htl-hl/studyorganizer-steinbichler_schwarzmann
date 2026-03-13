@@ -1,15 +1,45 @@
 <?php
 
-use app\models\Teacher;
+use yii\bootstrap5\Alert;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 /** @var yii\web\View $this */
-/** @var app\models\TeacherSearch $searchModel */
+/** @var app\models\UserSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Teachers';
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJs(<<<JS
+document.addEventListener('click', function (event) {
+    const deleteLink = event.target.closest('.js-teacher-delete');
+    if (!deleteLink) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const deleteForm = document.getElementById('delete-teacher-form');
+    const teacherNameLabel = document.getElementById('delete-teacher-name');
+    const modalElement = document.getElementById('delete-teacher-modal');
+
+    if (!deleteForm || !modalElement) {
+        return;
+    }
+
+    deleteForm.setAttribute('action', deleteLink.getAttribute('href'));
+
+    if (teacherNameLabel) {
+        teacherNameLabel.textContent = deleteLink.getAttribute('data-teachername') || 'this teacher';
+    }
+
+    if (window.bootstrap && window.bootstrap.Modal) {
+        window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    }
+});
+JS);
 ?>
+
 <div class="teacher-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -25,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php $teachers = $dataProvider->getModels(); ?>
         <?php if (empty($teachers)) : ?>
             <div class="col-12">
-                <?php \yii\bootstrap5\Alert::widget([
+                <?php Alert::widget([
                     'options' => [
                         'class' => 'alert-info',
                     ],
@@ -37,19 +67,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0"><?= Html::encode($teacher->firstname . ' ' . $teacher->lastname) ?></h5>
+                            <h5 class="card-title mb-0"><?= Html::encode($teacher->username) ?></h5>
                             <span class="badge bg-secondary"><?= Html::encode($teacher->id) ?></span>
                         </div>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">
-                                    <strong>First name:</strong> <?= Html::encode($teacher->firstname) ?>
+                                    <strong>Username:</strong> <?= Html::encode($teacher->username) ?>
                                 </li>
                                 <li class="list-group-item">
-                                    <strong>Last name:</strong> <?= Html::encode($teacher->lastname) ?>
+                                    <strong>Email:</strong> <?= Html::encode($teacher->email) ?>
                                 </li>
                                 <li class="list-group-item">
-                                    <strong>Active:</strong> <?= $teacher->isActive ? 'Yes' : 'No' ?>
+                                    <strong>Role:</strong> <?= Html::encode($teacher->role) ?>
                                 </li>
                             </ul>
                         </div>
@@ -57,12 +87,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= Html::a('View', ['view', 'id' => $teacher->id], ['class' => 'btn btn-sm btn-outline-secondary', 'data-pjax' => '0']) ?>
                             <?= Html::a('Update', ['update', 'id' => $teacher->id], ['class' => 'btn btn-sm btn-outline-primary', 'data-pjax' => '0']) ?>
                             <?= Html::a('Delete', ['delete', 'id' => $teacher->id], [
-                                'class' => 'btn btn-sm btn-outline-danger',
-                                'data-pjax' => '0',
-                                'data' => [
-                                    'confirm' => 'Are you sure you want to delete this item?',
-                                    'method' => 'post',
-                                ],
+                                    'class' => 'btn btn-sm btn-outline-danger js-teacher-delete',
+                                    'data-pjax' => '0',
+                                    'data-teachername' => $teacher->username,
                             ]) ?>
                         </div>
                     </div>
@@ -72,5 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php Pjax::end(); ?>
+
+    <?= $this->render('_deleteConfirm') ?>
 
 </div>

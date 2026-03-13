@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var app\models\Teacher $model */
+/** @var app\models\User $model */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Teachers', 'url' => ['index']];
@@ -30,9 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'firstname',
-            'lastname',
-            'isActive',
+            'username',
+            'email',
+            'role',
         ],
     ]) ?>
 
