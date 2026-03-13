@@ -33,13 +33,12 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     if (!Yii::$app->user->isGuest) {
         NavBar::begin([
             'brandLabel' => 'StudyOrganizer',
-            'brandUrl' => null,
+            'brandUrl' => ['/task/index'],
             'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top'],
         ]);
 
         $leftNavItems = [
             ['label' => 'Tasks', 'url' => ['/task/index']],
-            ['label' => 'Subjects', 'url' => ['/subject/index']],
         ];
 
         if (Yii::$app->user->identity->isAdmin()) {

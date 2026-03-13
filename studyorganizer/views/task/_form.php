@@ -16,15 +16,18 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'dueDate')->textInput() ?>
 
-    <?= $form->field($model, 'isCompleted')->textInput() ?>
+    <?= $form->field($model, 'isCompleted')->dropDownList(
+            [
+                    'active' => 'active',
+                    'completed' => 'completed'
+            ]
+
+    ) ?>
 
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'userId')->textInput() ?>
-
-    <?= $form->field($model, 'subjectId')->textInput() ?>
-
     <div class="form-group">
+
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
 

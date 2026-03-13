@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Task', ['create'], ['class' => 'btn btn-primary']) ?>
         <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
             <?= Html::a('Create Subject', ['subject/create'], ['class' => 'btn btn-success']) ?>
         <?php endif; ?>
