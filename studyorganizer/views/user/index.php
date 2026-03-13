@@ -2,8 +2,6 @@
 
 use app\models\User;
 use yii\helpers\Html;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
 use yii\widgets\Pjax;
 /** @var yii\web\View $this */
 /** @var app\models\UserSearch $searchModel */
@@ -64,44 +62,46 @@ JS);
     <?php Pjax::begin(); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-
-            'id',
-            'username',
-            'role',
-            [
-                'class' => ActionColumn::className(),
-                'template' => '{view} {update} {delete}',
-                'buttons' => [
-                    'view' => static function ($url, User $model) {
-                        return Html::a('View', ['view', 'id' => $model->id], [
-                            'title' => 'View',
-                            'data-pjax' => '0',
-                        ]);
-                    },
-                    'update' => static function ($url, User $model) {
-                        return Html::a('Update', ['update', 'id' => $model->id], [
-                            'title' => 'Update',
-                            'data-pjax' => '0',
-                        ]);
-                    },
-                    'delete' => static function ($url, User $model) {
-                        return Html::a('Delete', ['delete', 'id' => $model->id], [
-                            'title' => 'Delete',
-                            'class' => 'js-user-delete text-danger',
-                            'data-pjax' => '0',
-                            'data-username' => $model->username,
-                        ]);
-                    },
-                ],
-                'urlCreator' => static function ($action, User $model, $key) {
-                    return [$action, 'id' => $model->id];
-                },
-            ],
-        ],
-    ]); ?>
+    <div class="row">
+        <?php $users = $dataProvider->getModels(); ?>
+        <?php if (empty($users)) : ?>
+            <div class="col-12">
+                <?php \yii\bootstrap5\Alert::widget([
+                    'options' => [
+                        'class' => 'alert-info',
+                    ],
+                    'body' => 'No users found.'
+                ]); ?>
+            </div>
+        <?php else: ?>
+            <?php foreach ($users as $user): ?>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0"><?= Html::encode($user->username) ?></h5>
+                            <span class="badge bg-secondary"><?= Html::encode($user->id) ?></span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Role:</strong> <?= Html::encode($user->role) ?>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <?= Html::a('View', ['view', 'id' => $user->id], ['class' => 'btn btn-sm btn-outline-secondary', 'data-pjax' => '0']) ?>
+                            <?= Html::a('Update', ['update', 'id' => $user->id], ['class' => 'btn btn-sm btn-outline-primary', 'data-pjax' => '0']) ?>
+                            <?= Html::a('Delete', ['delete', 'id' => $user->id], [
+                                'class' => 'btn btn-sm btn-outline-danger js-user-delete',
+                                'data-pjax' => '0',
+                                'data-username' => $user->username,
+                            ]) ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 
     <?php Pjax::end(); ?>
 
