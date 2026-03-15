@@ -28,13 +28,13 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
 
-<header class="border-bottom">
+<header>
     <?php
     if (!Yii::$app->user->isGuest) {
         NavBar::begin([
             'brandLabel' => 'StudyOrganizer',
             'brandUrl' => ['/task/index'],
-            'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top'],
+            'options' => ['class' => 'navbar-expand-md fixed-top'],
         ]);
 
         $leftNavItems = [];
@@ -44,20 +44,21 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             $leftNavItems[] = ['label' => 'Teachers', 'url' => ['/teacher/index']];
         }
 
-        $rightNavItems = [[
-            'label' => 'Logout',
-            'url' => ['/site/logout'],
-            'linkOptions' => ['data-method' => 'post'],
-        ]];
-        if (!$leftNavItems == null) {
-            echo Nav::widget([
-                    'options' => ['class' => 'navbar-nav me-auto'],
-                    'items' => $leftNavItems,
-            ]);
-        }
+        $rightNavItems = [
+            [
+                'label' => 'Logout',
+                'url' => ['/site/logout'],
+                'linkOptions' => ['data-method' => 'post'],
+            ]
+        ];
 
         echo Nav::widget([
-            'options' => ['class' => 'navbar-nav ms-auto'],
+            'options' => ['class' => 'navbar-nav me-auto'],
+            'items' => $leftNavItems,
+        ]);
+
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav ms-auto align-items-center'],
             'items' => $rightNavItems,
         ]);
 
