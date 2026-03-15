@@ -33,20 +33,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <?php foreach ($subjects as $s): ?>
+            <?php foreach ($subjects
+
+                           as $s): ?>
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0"><?= Html::encode($s->name) ?></h5>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-dark"><?= Html::encode($s->id) ?></span>
-                                <?= Html::a($s->icondelete(), ['subject/delete', 'id' => $s->id], [
-                                        'class' => 'btn btn-sm btn-outline-danger',
-                                        'data' => [
-                                                'confirm' => 'Are you sure you want to delete this item?',
-                                                'method' => 'post',
-                                        ],
-                                ]) ?>
+                                <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
+                                    <?= Html::a($s->icondelete(), ['subject/delete', 'id' => $s->id], [
+                                            'class' => 'btn btn-sm btn-outline-danger',
+                                            'data' => [
+                                                    'confirm' => 'Are you sure you want to delete this item?',
+                                                    'method' => 'post',
+                                            ],
+                                    ]) ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="card-body">
@@ -54,7 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php if (!empty($s->tasks)): ?>
                                 <ul class="list-group list-group-flush">
                                     <?php foreach ($s->tasks as $task): ?>
-                                        <li class="list-group-item"><?= Html::encode($task->description) ?></li>
+                                        <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($s->id) || Yii::$app->user->identity->hasTask($task->id))): ?>
+                                            <li class="list-group-item"><?= Html::encode($task->description) ?></li>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
