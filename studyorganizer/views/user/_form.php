@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -42,10 +43,16 @@ $roleFormUrl = Yii::$app->request->get('role');
         </div>
 
         <div id="teacher-subjects-field" style="display:none;">
-            <?= $form->field($model, 'subjectIds')->listBox(
-                    ArrayHelper::map(Subject::find()->all(), 'id', 'name'),
-                    ['multiple' => true, 'size' => 5]
-            )->label('Assign Subjects To Teacher') ?>
+            <?= $form->field($model, 'subjectIds')->widget( Select2::class, [
+                    'data' => ArrayHelper::map(Subject::find()->all(), 'id', 'name'),
+                    'options' => [
+                            'placeholder' => 'Select subjects...',
+                            'multiple' => true
+                    ],
+                    'pluginOptions' => [
+                            'allowClear' => true
+                    ],
+            ])->label('Assign Subjects To Teacher'); ?>
         </div>
 
         <div class="form-group">

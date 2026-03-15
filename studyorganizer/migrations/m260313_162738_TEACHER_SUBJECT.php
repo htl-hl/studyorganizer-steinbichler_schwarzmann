@@ -42,7 +42,7 @@ class m260313_162738_TEACHER_SUBJECT extends Migration
     {
         $this->dropForeignKey('fk-teacher_subject-teacher', '{{%TEACHER_SUBJECT}}');
         $this->dropForeignKey('fk-teacher_subject-subject', '{{%TEACHER_SUBJECT}}');
-        $this->dropTable('{{%teacher_subject}}');
+        $this->dropTable('{{%TEACHER_SUBJECT}}');
     }
 
     /*

@@ -9,6 +9,9 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+/**
+ * @property Task[] $tasks
+ */
 class User extends ActiveRecord implements IdentityInterface
 {
     /**
@@ -158,6 +161,28 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(Teacher::class, ['userId' => 'id']);
     }
 
+    /**
+     * Gets query for [[Tasks]] via the junction table.
+     * This defines the n:n relationship from User to Tasks.
+     *
+     * @return ActiveQuery
+     * @throws InvalidConfigException
+     */
+    public function getTasks(): ActiveQuery
+    {
+        return $this->hasMany(Task::class, ['id' => 'taskId'])
+            ->viaTable('TASK_USER', ['userId' => 'id']);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function hasTask(int $taskId): bool
+    {
+        return $this->getTasks()
+            ->andWhere(['TASK.id' => $taskId])
+            ->exists();
+    }
 
     /**
      * @throws InvalidConfigException
