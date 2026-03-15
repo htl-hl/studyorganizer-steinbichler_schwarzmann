@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Subject;
 use app\models\Task;
 use app\models\TaskSearch;
+use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -75,8 +76,17 @@ class TaskController extends Controller
      * @param int|null $subjectId
      * @return string|\yii\web\Response
      */
-    public function actionCreate($subjectId = null)
+    public function actionCreate(int $subjectId)
     {
+        $user = Yii::$app->user->identity;
+
+        if (
+            !$user->isAdmin() &&
+            !$user->teachesSubject($subjectId)
+        ) {
+            throw new \yii\web\ForbiddenHttpException('You are not allowed to create tasks for this subject.');
+        }
+
         $model = new Task();
 
         if ($subjectId !== null) {

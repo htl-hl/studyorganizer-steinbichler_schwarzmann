@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\datetime\DateTimePicker;
 
 /** @var yii\web\View $this */
 /** @var app\models\Task $model */
@@ -14,12 +15,18 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'dueDate')->textInput() ?>
+    <?= $form->field($model, 'dueDate')->widget(DateTimePicker::class, [
+            'options' => ['placeholder' => 'Select due date...'],
+            'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd hh:ii:ss',
+            ]
+    ]) ?>
 
     <?= $form->field($model, 'isCompleted')->dropDownList(
             [
-                    'active' => 'active',
-                    'completed' => 'completed'
+                    0 => 'active',
+                    1 => 'completed'
             ]
 
     ) ?>

@@ -24,7 +24,8 @@ class m260216_131642_TASK extends Migration
             '{{%TASK}}',
             'userId',
             '{{%USER}}',
-            'id'
+            'id',
+            'CASCADE'
         );
 
         $this->addForeignKey(
@@ -33,6 +34,7 @@ class m260216_131642_TASK extends Migration
             'subjectId',
             '{{%SUBJECT}}',
             'id',
+            'CASCADE'
         );
     }
 
