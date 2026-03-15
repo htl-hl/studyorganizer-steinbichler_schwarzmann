@@ -24,14 +24,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <?php if (empty($subjects)) : ?>
-            <div class="col-12">
-                <?php Alert::widget([
-                        'options' => [
-                                'class' => 'alert-info',
-                        ],
-                        'body' => 'No subjects found.'
-                ]); ?>
-            </div>
+            <?php foreach (Yii::$app->session->getAllFlashes() as $key => $message): ?>
+                <div class="col-12">
+                    <?= Alert::widget([
+                            'options' => ['class' => 'alert-' . $key],
+                            'body' => $message,
+                    ]) ?>
+                </div>
+            <?php endforeach; ?>
         <?php else: ?>
             <?php foreach ($subjects as $s): ?>
                 <div class="col-md-4 mb-3">
@@ -50,11 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                         </div>
                         <div class="card-body">
-                            <?php if (!Yii::$app->user->isGuest && Yii::$app->user->can('Admin')): ?>
-                                <div class="mb-3">
-                                    <?= Html::a($s->iconupdate(), ['subject/update', 'id' => $s->id], ['class' => 'btn btn-sm btn-light']) ?>
-                                </div>
-                            <?php endif; ?>
                             <h6>Tasks:</h6>
                             <?php if (!empty($s->tasks)): ?>
                                 <ul class="list-group list-group-flush">
@@ -67,7 +62,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php endif; ?>
                         </div>
                         <div class="card-footer">
-                            <?= Html::a('Create Task', ['task/create', 'subjectId' => $s->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                            <?php if (!Yii::$app->user->isGuest): ?>
+                                <div class="mb-3">
+                                    <?php if (Yii::$app->user->identity->isAdmin()): ?>
+                                        <?= Html::a($s->iconupdate(), ['subject/update', 'id' => $s->id], ['class' => 'btn btn-sm btn-light']) ?>
+                                    <?php endif; ?>
+
+                                    <?php if ((Yii::$app->user->identity->teachesSubject($s->id)) || Yii::$app->user->identity->isAdmin()): ?>
+                                        <?= Html::a('Create Task', ['task/create', 'subjectId' => $s->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

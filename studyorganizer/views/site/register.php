@@ -27,7 +27,7 @@ $this->title = 'Register';
     </div>
 
     <div class="form-group">
-        <?= $form->field($model, 'password')->passwordInput(['placeholder' => '123456 is not safe dear User!']) ?>
+        <?= $form->field($model, 'password')->passwordInput(['placeholder' => '123456 is not safe']) ?>
 
         <?php if ($model->hasErrors('password')): ?>
             <p class="error"><?= implode(', ', $model->getFirstErrors('password')) ?></p>

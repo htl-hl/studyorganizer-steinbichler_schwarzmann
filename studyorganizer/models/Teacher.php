@@ -2,26 +2,28 @@
 
 namespace app\models;
 
-use Yii;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "TEACHER".
  *
  * @property int $id
- * @property string $username
+ * @property int $userId
  * @property int $isActive
  *
  * @property SUBJECT[] $subjects
- * @property TEACHERSUBJECT[] $tEACHERSUBJECTs
  */
-class Teacher extends \yii\db\ActiveRecord
+class Teacher extends ActiveRecord
 {
 
+    public $removeTeacherStatus = false;
 
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'TEACHER';
     }
@@ -29,54 +31,91 @@ class Teacher extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['username', 'isActive'], 'required'],
-            [['isActive'], 'integer'],
-            [['username'], 'string', 'max' => 255],
+            [['userId'], 'required'],
+            [['userId'], 'integer'],
+            [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['userId' => 'id']],
+
+            [['isActive'], 'required'],
+            [['isActive'], 'boolean'],
+
+            [['userId'], 'unique', 'message' => 'Dieser User ist bereits als Teacher eingetragen.'],
+
+            ['removeTeacherStatus', 'boolean']
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
-            'id' => 'ID',
-            'username' => 'Username',
+            'userId' => 'User ID',
             'isActive' => 'Is Active',
         ];
+    }
+
+    public function beforeSave($insert): bool
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->removeTeacherStatus && !$insert) {
+                if ($this->user) {
+                    $this->user->role = 'User';
+                    $this->user->save(false);
+                }
+
+                // Subjects löschen
+                \app\models\TeacherSubject::deleteAll(['teacherId' => $this->id]);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function afterSave($insert, $changedAttributes): void
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+
+        if ($this->removeTeacherStatus && !$insert) {
+            $this->delete();
+        }
     }
 
     /**
      * Gets query for [[Subjects]].
      *
-     * @return \yii\db\ActiveQuery|SUBJECTQuery
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getSubjects()
+    public function getSubjects(): ActiveQuery
     {
-        return $this->hasMany(SUBJECT::class, ['id' => 'subjectId'])->viaTable('TEACHER_SUBJECT', ['teacherId' => 'id']);
+        return $this->hasMany(Subject::class, ['id' => 'subjectId'])
+            ->viaTable('TEACHER_SUBJECT', ['teacherId' => 'id']);
     }
-
-    /**
-     * Gets query for [[TEACHERSUBJECTs]].
-     *
-     * @return \yii\db\ActiveQuery|TEACHERSUBJECTQuery
-     */
-    public function getTEACHERSUBJECTs()
-    {
-        return $this->hasMany(TEACHERSUBJECT::class, ['teacherId' => 'id']);
-    }
-
     /**
      * {@inheritdoc}
      * @return TeacherQuery the active query used by this AR class.
      */
-    public static function find()
+    public static function find(): TeacherQuery
     {
         return new TeacherQuery(get_called_class());
     }
 
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'userId']);
+    }
+
+    public function getIsActiveAsString(): string
+    {
+        if ($this->isActive) {
+            return "Yes";
+        } else {
+            return "No";
+        }
+    }
 }
