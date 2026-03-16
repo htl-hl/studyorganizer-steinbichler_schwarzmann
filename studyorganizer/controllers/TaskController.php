@@ -4,12 +4,13 @@ namespace app\controllers;
 
 use app\models\Subject;
 use app\models\Task;
-use app\models\TaskSearch;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\helpers\ArrayHelper;
 
 /**
  * TaskController implements the CRUD actions for Task model.
@@ -88,22 +89,22 @@ class TaskController extends Controller
         }
 
         $model = new Task();
-
-        if ($subjectId !== null) {
-            $model->subjectId = $subjectId;
-        }
+        $model->subjectId = $subjectId;
+        $model->isCompleted = 0;
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['index']);
+            if ($model->load($this->request->post())) {
+
+                $post = Yii::$app->request->post();
+                $model->userIds = $post['Task']['userIds'] ?? [];
+
+                if ($model->save()) {
+                    return $this->redirect(['index']);
+                }
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->render('create', ['model' => $model]);
     }
 
     /**
@@ -117,12 +118,22 @@ class TaskController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+
+            $post = Yii::$app->request->post();
+            $model->userIds = $post['Task']['userIds'] ?? [];
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+
+        // Get all users to display in the assignment form
+        $users = ArrayHelper::map(User::find()->all(), 'id', 'username');
 
         return $this->render('update', [
             'model' => $model,
+            'users' => $users,
         ]);
     }
 

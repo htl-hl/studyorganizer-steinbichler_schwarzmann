@@ -15,18 +15,8 @@ class m260216_131642_TASK extends Migration
             'dueDate' => $this->dateTime()->notNull(),
             'isCompleted' => $this->boolean()->notNull()->defaultValue(false),
             'description' => $this->text()->notNull(),
-            'userId' => $this->integer()->notNull(),
             'subjectId' => $this->integer()->notNull(),
         ]);
-
-        $this->addForeignKey(
-            'user-Id',
-            '{{%TASK}}',
-            'userId',
-            '{{%USER}}',
-            'id',
-            'CASCADE'
-        );
 
         $this->addForeignKey(
             'subject-Id',
@@ -43,6 +33,7 @@ class m260216_131642_TASK extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey('subject-Id', '{{%TASK}}');
         $this->dropTable("{{%TASK}}");
     }
 

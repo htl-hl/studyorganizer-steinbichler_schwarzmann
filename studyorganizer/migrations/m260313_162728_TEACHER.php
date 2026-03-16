@@ -30,10 +30,7 @@ class m260313_162728_TEACHER extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey(
-            'fk_teacher-user',
-            '{{%TEACHER}}'
-        );
+        $this->dropForeignKey('fk_teacher-user', '{{%TEACHER}}');
 
         $this->dropTable('{{%TEACHER}}');
     }
