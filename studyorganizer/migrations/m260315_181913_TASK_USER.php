@@ -14,6 +14,7 @@ class m260315_181913_TASK_USER extends Migration
             'taskId' => $this->integer()->notNull(),
             'isCompleted' => $this->boolean()->notNull()->defaultValue(false),
             'return_document' => $this->binary()->null(),
+            'file_extension' => $this->string()->null(),
             'PRIMARY KEY (taskId, userId)'
         ]);
 

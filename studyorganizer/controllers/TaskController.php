@@ -103,11 +103,13 @@ class TaskController extends BaseController
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->taskDocumentFile = UploadedFile::getInstance($model, 'taskDocumentFile');
-                $model->uploadTaskDocument($model->taskDocumentFile);
+                if ($model->taskDocumentFile) {
+                    $model->uploadTaskDocument($model->taskDocumentFile);
+                }
                 $post = Yii::$app->request->post();
                 $model->userIds = $post['Task']['userIds'] ?? [];
 
-                if ($model->save()) {
+                if ($model->save(false)) {
                     return $this->redirect(['index']);
                 }
             }
@@ -134,7 +136,6 @@ class TaskController extends BaseController
             if ($model->taskDocumentFile) {
                 $model->uploadTaskDocument($model->taskDocumentFile);
             }
-
             $post = Yii::$app->request->post();
             $model->userIds = $post['Task']['userIds'] ?? [];
 
@@ -178,7 +179,7 @@ class TaskController extends BaseController
         ]);
 
         if (!$taskUser) {
-            throw new NotFoundHttpException('Task not assigned to you!');
+            throw new NotFoundHttpException('Task not assigned!');
         }
 
         return $this->render('submit', [
@@ -195,33 +196,33 @@ class TaskController extends BaseController
     public function actionSubmitReturn(int $id)
     {
         $task = $this->findModel($id);
-
         $taskUser = TaskUser::findOne([
             'taskId' => $id,
             'userId' => Yii::$app->user->id
         ]);
 
         if (!$taskUser) {
-            throw new NotFoundHttpException('Task is not assigned!');
+            throw new NotFoundHttpException('Task not assigned!');
         }
 
         if ($this->request->isPost) {
-            $taskUser->returnDocumentFile = UploadedFile::getInstance($taskUser, 'returnDocumentFile');
 
-            if ($taskUser->load($this->request->post()) && $taskUser->validate()) {
-                if ($taskUser->returnDocumentFile) {
-                    $taskUser->return_document = file_get_contents($taskUser->returnDocumentFile->tempName);
+            if ($taskUser->load($this->request->post())) {
+                $file = UploadedFile::getInstance($taskUser, 'returnDocumentFile');
+                if ($file) {
+                    $taskUser->return_document = file_get_contents($file->tempName);
+                    $taskUser->file_extension = $file->extension;
                 }
 
                 $taskUser->isCompleted = true;
 
                 if ($taskUser->save(false)) {
-                    Yii::$app->session->setFlash('success', 'submitted task!');
+                    Yii::$app->session->setFlash('success', 'Task submitted!');
                     return $this->redirect(['view', 'id' => $id]);
                 }
             }
 
-            Yii::$app->session->setFlash('error', 'error while submitting');
+            Yii::$app->session->setFlash('error', 'Validation failed.');
         }
 
         return $this->render('submit', [
@@ -229,6 +230,7 @@ class TaskController extends BaseController
             'taskUser' => $taskUser
         ]);
     }
+
 
     /**
      * @throws ForbiddenHttpException
@@ -281,26 +283,45 @@ class TaskController extends BaseController
     }
 
     /**
+     * @throws NotFoundHttpException
      * @throws RangeNotSatisfiableHttpException
      */
     public function actionDownloadTaskDoc($id)
     {
         $task = Task::findOne($id);
+
+        if (!$task || !$task->task_document) {
+            throw new NotFoundHttpException('File not found');
+        }
+
+        $ext = $task->file_extension ?: 'pdf';
+        $filename = "task_{$task->title}__for__subject_{$task->getSubject()->one()->name}.{$ext}";
+
         return Yii::$app->response->sendContentAsFile(
             $task->task_document,
-            'task_' . $id . '_document.pdf'
+            $filename
         );
     }
 
     /**
      * @throws RangeNotSatisfiableHttpException
+     * @throws NotFoundHttpException
      */
-    public function actionDownloadReturnDoc($id)
+    public function actionDownloadReturnDoc(int $taskId, int $userId)
     {
-        $task = Task::findOne($id);
+        $taskUser = TaskUser::findOne(['taskId' => $taskId, 'userId' => $userId]);
+
+        if (!$taskUser || !$taskUser->return_document) {
+            throw new NotFoundHttpException('File not found');
+        }
+
+        $ext = $taskUser->file_extension ?: 'pdf';
+        $filename = "task_{$taskUser->getTask()->one()->title}__from__user_{$taskUser->getUser()->one()->username}.{$ext}";
+
         return Yii::$app->response->sendContentAsFile(
-            $task->getTaskUser()->return_document,
-            'task_' . $id . '_return.pdf'
+            $taskUser->return_document,
+            $filename
         );
     }
+
 }

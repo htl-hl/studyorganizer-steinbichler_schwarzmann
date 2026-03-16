@@ -54,8 +54,9 @@ class Task extends ActiveRecord
             ['userIds', 'default', 'value' => []],
             [['subjectId'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subjectId' => 'id']],
 
-            [['taskDocumentFile'], 'safe'],
+            [['taskDocumentFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, md', 'maxSize' => 10*1024*1024],
             [['task_document'], 'safe'],
+            [['file_extension'], 'string', 'max' => 10]
         ];
     }
 
@@ -97,6 +98,7 @@ class Task extends ActiveRecord
     {
         if ($file) {
             $this->task_document = file_get_contents($file->tempName);
+            $this->file_extension = $file->extension;
         }
     }
 

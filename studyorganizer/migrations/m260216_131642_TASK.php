@@ -16,7 +16,8 @@ class m260216_131642_TASK extends Migration
             'description' => $this->text()->notNull(),
             'subjectId' => $this->integer()->notNull(),
 
-            'task_document' => $this->binary()->null()
+            'task_document' => $this->binary()->null(),
+            'file_extension' => $this->string()->null()
         ]);
 
         $this->addForeignKey(
