@@ -364,3 +364,19 @@ body {
 .mb-0 { margin-bottom: 0; }
 .mb-3 { margin-bottom: 0.75rem; }
 .col-12 { grid-column: 1 / -1; }
+
+/* ─── Due Date Colors ─── */
+.due-date-blue {
+    background-color: #e0f2f1; /* Light Blue */
+    color: #004d40;
+}
+
+.due-date-yellow {
+    background-color: #fffde7; /* Light Yellow */
+    color: #fbc02d;
+}
+
+.due-date-red {
+    background-color: #ffebee; /* Light Red */
+    color: #c62828;
+}
