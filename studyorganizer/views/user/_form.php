@@ -43,7 +43,7 @@ $roleFormUrl = Yii::$app->request->get('role');
         </div>
 
         <div id="teacher-subjects-field" style="display:none;">
-            <?= $form->field($model, 'subjectIds')->widget( Select2::class, [
+            <?= $form->field($model, 'subjectIds')->widget(Select2::class, [
                     'data' => ArrayHelper::map(Subject::find()->all(), 'id', 'name'),
                     'options' => [
                             'placeholder' => 'Select subjects...',
@@ -57,7 +57,11 @@ $roleFormUrl = Yii::$app->request->get('role');
 
         <div class="form-group">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Cancel', ['view', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
+            <?php if ($roleFormUrl !== 'Teacher'): ?>
+                <?= Html::a('Cancel', ['index'], ['class' => 'btn btn-secondary']) ?>
+            <?php else: ?>
+                <?= Html::a('Cancel', ['teacher/index'], ['class' => 'btn btn-secondary']) ?>
+            <?php endif; ?>
         </div>
 
         <?php ActiveForm::end(); ?>
