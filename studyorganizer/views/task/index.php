@@ -91,9 +91,24 @@ JS
                             <?php if (!empty($s->tasks)): ?>
                                 <ul class="list-group list-group-flush">
                                     <?php foreach ($s->tasks as $task): ?>
-                                        <?php try {
+                                        <?php
+                                        $dueDate = new DateTime($task->dueDate);
+                                        $now = new DateTime();
+                                        $interval = $now->diff($dueDate);
+                                        $days = (int)$interval->format('%r%a');
+
+                                        $colorClass = '';
+                                        if ($days < 1) {
+                                            $colorClass = 'due-date-red';
+                                        } elseif ($days < 7) {
+                                            $colorClass = 'due-date-yellow';
+                                        } elseif ($days < 14) {
+                                            $colorClass = 'due-date-blue';
+                                        }
+
+                                        try {
                                             if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($s->id) || Yii::$app->user->identity->hasTask($task->id))): ?>
-                                                <?= Html::a($task->title, ['view', 'id' => $task->id], ['class' => 'list-group-item list-group-item-action']) ?>
+                                                <?= Html::a($task->title, ['view', 'id' => $task->id], ['class' => 'list-group-item list-group-item-action ' . $colorClass]) ?>
                                             <?php else: ?>
                                                 <p class="empty-task">No tasks</p>
                                             <?php endif;
