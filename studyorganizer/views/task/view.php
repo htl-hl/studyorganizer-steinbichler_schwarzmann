@@ -76,9 +76,16 @@ JS
                 <?php if (!(Yii::$app->user->isGuest || Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->isTeacher())): ?>
                     <li class="list-group-item">
                         <strong>Completed:</strong>
-                        <?= $model->getTaskUser()->isCompleted ?
-                                '<span class="badge bg-success">Yes</span>' :
-                                '<span class="badge bg-warning text-dark">No</span>' ?>
+                        <?php
+                        $taskUser = $model->getTaskUser();
+                        if ($taskUser->auto_submitted) {
+                            echo '<span class="badge bg-danger">Expired</span>';
+                        } else {
+                            echo $taskUser->isCompleted
+                                    ? '<span class="badge bg-success">Yes</span>'
+                                    : '<span class="badge bg-warning text-dark">No</span>';
+                        }
+                        ?>
                     </li>
                 <?php endif; ?>
 

@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\Task;
+use app\models\TaskUser;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\BadRequestHttpException;
@@ -36,6 +38,11 @@ class BaseController extends Controller
             Yii::$app->user->loginRequired();  // ← Automatischer Redirect!
             return false;
         }
+
+        if (!Yii::$app->user->isGuest) {
+            TaskUser::autoSubmitExpired();
+        }
+
         return parent::beforeAction($action);
     }
 
