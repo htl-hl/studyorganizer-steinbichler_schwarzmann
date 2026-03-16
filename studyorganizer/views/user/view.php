@@ -42,8 +42,6 @@ JS
 
 <div class="user-view">
 
-    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
-
     <p class="mb-4">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [

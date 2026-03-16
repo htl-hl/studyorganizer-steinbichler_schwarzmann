@@ -44,16 +44,17 @@ JS
 
 <div class="task-view">
 
-    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
-
     <p class="mb-4">
         <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($model->subject->id))): ?>
-        <?= Html::a('Edit', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-                'class' => 'btn btn-sm btn-outline-danger js-task-delete',
-                'confirm' => 'Are you sure you want to delete this task?',
-                'data-taskname' => $model->title,
-        ]) ?>
+            <?= Html::a('View submissions', ['submissions', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('Edit', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+                    'class' => 'btn btn-sm btn-outline-danger js-task-delete',
+                    'confirm' => 'Are you sure you want to delete this task?',
+                    'data-taskname' => $model->title,
+            ]) ?>
+        <?php elseif (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasTask($model->id) && !$model->getTaskUser()->isCompleted): ?>
+            <?= Html::a('Submit', ['submit', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
         <?php endif; ?>
         <?= Html::a('Back', ['index'], ['class' => 'btn btn-secondary']) ?>
     </p>
@@ -72,13 +73,14 @@ JS
                 <li class="list-group-item">
                     <strong>Due Date:</strong> <?= Html::encode($model->dueDate) ?>
                 </li>
-
-                <li class="list-group-item">
-                    <strong>Completed:</strong>
-                    <?= $model->isCompleted ?
-                            '<span class="badge bg-success">Yes</span>' :
-                            '<span class="badge bg-warning text-dark">No</span>' ?>
-                </li>
+                <?php if (!(Yii::$app->user->isGuest || Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->isTeacher())): ?>
+                    <li class="list-group-item">
+                        <strong>Completed:</strong>
+                        <?= $model->getTaskUser()->isCompleted ?
+                                '<span class="badge bg-success">Yes</span>' :
+                                '<span class="badge bg-warning text-dark">No</span>' ?>
+                    </li>
+                <?php endif; ?>
 
                 <li class="list-group-item">
                     <strong>Subject:</strong>
@@ -88,7 +90,7 @@ JS
                         <span class="text-muted">No subject assigned</span>
                     <?php endif; ?>
                 </li>
-                <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($model->subject->id)  )): ?>
+                <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($model->subject->id))): ?>
                     <li class="list-group-item">
                         <strong>Assigned Users:</strong>
                         <div class="mt-2">
@@ -100,6 +102,15 @@ JS
                                 <span class="text-muted">No users assigned</span>
                             <?php endif; ?>
                         </div>
+                    </li>
+                <?php endif; ?>
+
+                <?php if ($model->task_document): ?>
+                    <li class="list-group-item">
+                        <strong>Task Document:</strong> <?= Html::a('Download',
+                                ['download-task-doc', 'id' => $model->id],
+                                ['class' => 'btn btn-outline-primary btn-sm mt-1']
+                        ) ?>
                     </li>
                 <?php endif; ?>
 

@@ -12,6 +12,9 @@ class m260315_181913_TASK_USER extends Migration
         $this->createTable('{{%TASK_USER}}', [
             'userId' => $this->integer()->notNull(),
             'taskId' => $this->integer()->notNull(),
+            'isCompleted' => $this->boolean()->notNull()->defaultValue(false),
+            'return_document' => $this->binary()->null(),
+            'PRIMARY KEY (taskId, userId)'
         ]);
 
         $this->addForeignKey(

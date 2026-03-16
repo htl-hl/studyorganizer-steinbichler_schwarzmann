@@ -4,6 +4,7 @@ use app\models\User;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\ForbiddenHttpException;
 use yii\widgets\ActiveForm;
 use kartik\datetime\DateTimePicker;
 
@@ -42,7 +43,7 @@ use kartik\datetime\DateTimePicker;
         if (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->isTeacher()) {
             $users = ArrayHelper::map(User::find()->where(['role' => 'User'])->all(), 'id', 'username');
         } else {
-            throw new \yii\web\ForbiddenHttpException('You are not allowed to access this page');
+            throw new ForbiddenHttpException('You are not allowed to access this page');
         }
     } ?>
 
@@ -56,7 +57,28 @@ use kartik\datetime\DateTimePicker;
                     'allowClear' => true
             ],
     ])->label('Assign to Users'); ?>
+    <br>
+    <div class="mb-3">
+        <label for="taskDocumentFile" class="form-label fw-bold">
+            Task description document
+        </label>
 
+        <div class="input-group">
+        <span class="input-group-text">
+            📎
+        </span>
+            <?= $form->field($model, 'taskDocumentFile')->fileInput([
+                    'accept' => '.pdf,.doc,.docx,.md',
+                    'id' => 'taskDocumentFile',
+                    'class' => 'form-control'
+            ])->label(false) ?>
+        </div>
+
+        <div class="form-text">
+            pdf, word (doc, docx), txt or markdown files (max. 10MB)
+        </div>
+    </div>
+    <br>
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">

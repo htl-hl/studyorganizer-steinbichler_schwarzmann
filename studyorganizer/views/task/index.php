@@ -73,11 +73,7 @@ JS
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                                <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
-                                <?= Html::a(Html::encode($s->name), ['subject/view', 'id' => $s->id], ['class' => 'btn btn-outline-secondary']) ?>
-                                <?php else: ?>
                                     <?= Html::encode($s->name) ?>
-                                <?php endif; ?>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-dark"><?= Html::encode($s->id) ?></span>

@@ -4,7 +4,9 @@ namespace app\models;
 
 use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "TASK".
@@ -12,14 +14,13 @@ use yii\db\ActiveQuery;
  * @property int $id
  * @property string $title
  * @property string $dueDate
- * @property int $isCompleted
  * @property string $description
  * @property int $subjectId
  *
  * @property Subject $subject
  * @property User[] $users
  */
-class Task extends \yii\db\ActiveRecord
+class Task extends ActiveRecord
 {
     /**
      * This property will be used to store the user IDs for the task assignment form.
@@ -27,10 +28,12 @@ class Task extends \yii\db\ActiveRecord
      */
     public $userIds = [];
 
+    public $taskDocumentFile;
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'TASK';
     }
@@ -38,13 +41,11 @@ class Task extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['isCompleted'], 'default', 'value' => 0],
             [['title', 'dueDate', 'description', 'subjectId'], 'required'],
             [['dueDate', 'userIds'], 'safe'],
-            [['isCompleted', 'subjectId'], 'integer'],
             [['description'], 'string'],
             [['title'], 'string', 'max' => 255],
             [['title'], 'unique'],
@@ -52,24 +53,29 @@ class Task extends \yii\db\ActiveRecord
             ['userIds', 'each', 'rule' => ['integer']],
             ['userIds', 'default', 'value' => []],
             [['subjectId'], 'exist', 'skipOnError' => true, 'targetClass' => Subject::class, 'targetAttribute' => ['subjectId' => 'id']],
+
+            [['taskDocumentFile'], 'safe'],
+            [['task_document'], 'safe'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
             'title' => 'Title',
             'dueDate' => 'Due Date',
-            'isCompleted' => 'Is Completed',
             'description' => 'Description',
             'subjectId' => 'Subject ID',
         ];
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
     public function afterFind()
     {
         parent::afterFind();
@@ -85,6 +91,21 @@ class Task extends \yii\db\ActiveRecord
             return true;
         }
         return false;
+    }
+
+    public function uploadTaskDocument($file)
+    {
+        if ($file) {
+            $this->task_document = file_get_contents($file->tempName);
+        }
+    }
+
+    // Return-Dokument speichern (Update)
+    public function uploadReturnDocument($file)
+    {
+        if ($file) {
+            $this->return_document = file_get_contents($file->tempName);
+        }
     }
 
     /**
@@ -109,6 +130,7 @@ class Task extends \yii\db\ActiveRecord
             $tu = new TaskUser();
             $tu->taskId = $this->id;
             $tu->userId = (int)$userId;
+            $tu->isCompleted = false;
             if (!$tu->save()) {
                 Yii::error('TaskUser save failed: ' . json_encode($tu->errors));
             }
@@ -118,20 +140,26 @@ class Task extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Subject]].
      *
-     * @return \yii\db\ActiveQuery|SubjectQuery
+     * @return ActiveQuery
      */
-    public function getSubject()
+    public function getSubject(): ActiveQuery
     {
         return $this->hasOne(Subject::class, ['id' => 'subjectId']);
+    }
+
+    public function getTaskUser()
+    {
+        return $this->hasOne(TaskUser::class, ['taskId' => 'id'])->where(['userId' => Yii::$app->user->id])->one();
     }
 
     /**
      * Gets query for [[Users]] via the junction table.
      * This defines the n:n relationship.
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getUsers()
+    public function getUsers(): ActiveQuery
     {
         return $this->hasMany(User::class, ['id' => 'userId'])
             ->viaTable('TASK_USER', ['taskId' => 'id']);
@@ -141,7 +169,7 @@ class Task extends \yii\db\ActiveRecord
      * {@inheritdoc}
      * @return TaskQuery the active query used by this AR class.
      */
-    public static function find()
+    public static function find(): TaskQuery
     {
         return new TaskQuery(get_called_class());
     }

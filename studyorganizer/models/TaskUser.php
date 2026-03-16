@@ -15,6 +15,10 @@ use Yii;
  */
 class TaskUser extends \yii\db\ActiveRecord
 {
+
+
+    public $returnDocumentFile;
+
     /**
      * {@inheritdoc}
      */
@@ -31,8 +35,9 @@ class TaskUser extends \yii\db\ActiveRecord
         return [
             [['userId', 'taskId'], 'required'],
             [['userId', 'taskId'], 'integer'],
-            [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['userId' => 'id']],
-            [['taskId'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['taskId' => 'id']],
+            [['isCompleted'], 'boolean'],
+            [['returnDocumentFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, txt, md', 'maxSize' => 10*1024*1024],
+            [['return_document'], 'safe'],
         ];
     }
 
