@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\RegisterForm;
 use Yii;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -16,7 +17,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -42,7 +43,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -50,7 +51,7 @@ class SiteController extends Controller
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'fixedVerifyCode' => YII_ENV_TEST ? 'test' : null,
             ],
         ];
     }
@@ -58,9 +59,9 @@ class SiteController extends Controller
     /**
      * Displays homepage.
      *
-     * @return string
+     * @return Response
      */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         if (Yii::$app->user->isGuest) {
             return $this->redirect(['site/login']);
@@ -91,6 +92,10 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * @throws Exception
+     * @throws \yii\base\Exception
+     */
     public function actionRegister()
     {
         if (!Yii::$app->user->isGuest) {
@@ -115,7 +120,7 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 
@@ -126,6 +131,7 @@ class SiteController extends Controller
      * Displays contact page.
      *
      * @return Response|string
+     * @throws NotFoundHttpException
      */
     public function actionContact()
     {
@@ -136,8 +142,9 @@ class SiteController extends Controller
      * Displays about page.
      *
      * @return string
+     * @throws NotFoundHttpException
      */
-    public function actionAbout()
+    public function actionAbout(): string
     {
         throw new NotFoundHttpException('The requested page does not exist.');
     }

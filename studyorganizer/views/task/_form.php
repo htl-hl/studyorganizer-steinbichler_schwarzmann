@@ -32,11 +32,22 @@ use kartik\datetime\DateTimePicker;
             'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd hh:ii',
+                    'startDate' => date('Y-m-d H:i'),
+                    'todayHighlight' => true,
             ]
     ]) ?>
 
+    <?php
+    if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->isTeacher()) {
+            $users = ArrayHelper::map(User::find()->where(['role' => 'User'])->all(), 'id', 'username');
+        } else {
+            throw new \yii\web\ForbiddenHttpException('You are not allowed to access this page');
+        }
+    } ?>
+
     <?= $form->field($model, 'userIds')->widget(Select2::class, [
-            'data' => ArrayHelper::map(User::find()->where(['role' => 'User'])->all(), 'id', 'username'),
+            'data' => $users,
             'options' => [
                     'placeholder' => 'Select users...',
                     'multiple' => true
@@ -51,6 +62,7 @@ use kartik\datetime\DateTimePicker;
     <div class="form-group">
 
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Cancel', ['index'], ['class' => 'btn btn-secondary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

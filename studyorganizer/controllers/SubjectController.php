@@ -4,19 +4,22 @@ namespace app\controllers;
 
 use app\models\Subject;
 use app\models\SubjectSearch;
-use yii\web\Controller;
+use Throwable;
+use Yii;
+use yii\db\Exception as DbException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * SubjectController implements the CRUD actions for Subject model.
  */
-class SubjectController extends Controller
+class SubjectController extends BaseController
 {
     /**
      * @inheritDoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return array_merge(
             parent::behaviors(),
@@ -36,7 +39,7 @@ class SubjectController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $searchModel = new SubjectSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -53,7 +56,7 @@ class SubjectController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -63,7 +66,8 @@ class SubjectController extends Controller
     /**
      * Creates a new Subject model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * @return string|Response
+     * @throws DbException
      */
     public function actionCreate()
     {
@@ -86,10 +90,11 @@ class SubjectController extends Controller
      * Updates an existing Subject model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws DbException
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
 
@@ -106,12 +111,22 @@ class SubjectController extends Controller
      * Deletes an existing Subject model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return Response
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+            try {
+            $deletedSubject = $this->findModel($id)->delete();
+            if ($deletedSubject) {
+                Yii::$app->session->setFlash('success', 'User deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'User could not be deleted.');
+            }
+        } catch (DbException $e) {
+            Yii::$app->session->setFlash('error', 'User could not be deleted because related records exist.');
+        } catch (Throwable $e) {
+            Yii::$app->session->setFlash('error', 'User Id could not be found');
+        }
 
         return $this->redirect(['task/index']);
     }
@@ -123,7 +138,7 @@ class SubjectController extends Controller
      * @return Subject the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Subject
     {
         if (($model = Subject::findOne(['id' => $id])) !== null) {
             return $model;

@@ -25,16 +25,24 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="d-flex flex-column h-100">
+<body class="d-flex f0lex-column h-100">
 <?php $this->beginBody() ?>
 
-<header>
+<?php
+// Ganz oben in main.php
+if (in_array(Yii::$app->controller->action->id, ['login', 'register'])) {
+    app\controllers\BaseController::disableBrowserCache();
+}
+?>
+
+
+<header class="border-bottom">
     <?php
     if (!Yii::$app->user->isGuest) {
         NavBar::begin([
             'brandLabel' => 'StudyOrganizer',
             'brandUrl' => ['/task/index'],
-            'options' => ['class' => 'navbar-expand-md fixed-top'],
+            'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top'],
         ]);
 
         $leftNavItems = [];
@@ -44,6 +52,21 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             $leftNavItems[] = ['label' => 'Teachers', 'url' => ['/teacher/index']];
         }
 
+        $rightNavItems = [[
+            'label' => 'Logout',
+            'url' => ['/site/logout'],
+            'linkOptions' => ['data-method' => 'post'],
+        ]];
+        if (!$leftNavItems == null) {
+            try {
+                echo Nav::widget([
+                        'options' => ['class' => 'navbar-nav me-auto'],
+                        'items' => $leftNavItems,
+                ]);
+            } catch (Throwable $e) {
+                echo $e;
+            }
+        }
         $rightNavItems = [
             [
                 'label' => 'Logout',
@@ -61,6 +84,14 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             'options' => ['class' => 'navbar-nav ms-auto align-items-center'],
             'items' => $rightNavItems,
         ]);
+        try {
+            echo Nav::widget([
+                    'options' => ['class' => 'navbar-nav ms-auto'],
+                    'items' => $rightNavItems,
+            ]);
+        } catch (Throwable $e) {
+            echo $e;
+        }
 
         NavBar::end();
     }

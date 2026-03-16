@@ -21,7 +21,7 @@ class UserController extends Controller
     /**
      * @inheritDoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return array_merge(
             parent::behaviors(),
@@ -41,7 +41,7 @@ class UserController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -58,7 +58,7 @@ class UserController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -68,7 +68,7 @@ class UserController extends Controller
     /**
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws DbException
      */
     public function actionCreate()
@@ -124,29 +124,28 @@ class UserController extends Controller
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
      */
 
-// TODO: IRGENDWAS PASST MIT DEM UPDATE UND TO TEACHER MACHEN NOCH NIT MUSS ICH ANSCHAUEN!
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws DbException
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
 
         if ($this->request->isPost) {
-            // ✅ Standard Yii2 load() - TypeError wird durch beforeValidate() gefixt
+
             if ($model->load($this->request->post()) && $model->validate() && $model->save(false)) {
 
-                // ✅ Teacher + Subjects synchronisieren (wie bei CREATE)
                 if ($model->isTeacher()) {
-                    $subjectIds = $model->subjectIds ?? []; // Array durch beforeValidate() garantiert
+                    $subjectIds = $model->subjectIds ?? [];
 
                     $teacher = Teacher::findOne(['userId' => $model->id]);
                     if (!$teacher) {
@@ -188,15 +187,14 @@ class UserController extends Controller
      * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return Response
      */
     public
     function actionDelete(int $id): Response
     {
         try {
-            $deletedRows = $this->findModel($id)->delete();
-            if ($deletedRows) {
+            $deletedUser = $this->findModel($id)->delete();
+            if ($deletedUser) {
                 Yii::$app->session->setFlash('success', 'User deleted successfully.');
             } else {
                 Yii::$app->session->setFlash('error', 'User could not be deleted.');
@@ -218,7 +216,7 @@ class UserController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected
-    function findModel($id)
+    function findModel(int $id): User
     {
         if (($model = User::findOne(['id' => $id])) !== null) {
             return $model;
