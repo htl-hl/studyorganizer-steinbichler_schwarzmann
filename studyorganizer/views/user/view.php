@@ -51,6 +51,7 @@ JS
                 'confirm' => 'Are you sure you want to delete this user?',
                 'data-username' => $model->username
         ]) ?>
+        <?= Html::a('Back', ['index'], ['class' => 'btn btn-secondary']) ?>
     </p>
 
     <div class="card shadow-sm">

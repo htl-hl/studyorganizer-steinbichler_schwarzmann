@@ -50,8 +50,10 @@ JS
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->teacher->id], [
                 'class' => 'btn btn-sm btn-outline-danger js-teacher-delete',
+                'confirm' => 'Are you sure you want to delete this teacher?',
                 'data-teachername' => $model->username,
         ]) ?>
+        <?= Html::a('Back', ['index'], ['class' => 'btn btn-secondary']) ?>
     </p>
 
     <div class="card shadow-sm">

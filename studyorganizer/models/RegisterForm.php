@@ -10,7 +10,7 @@ class RegisterForm extends Model
     public $username;
     public $email;
     public $password;
-    public $role = 'user';
+    public $role = 'User';
 
     public function rules(): array
     {
@@ -22,7 +22,7 @@ class RegisterForm extends Model
             ['username', 'unique', 'targetClass' => User::class, 'targetAttribute' => 'username'],
             ['email', 'unique', 'targetClass' => User::class, 'targetAttribute' => 'email'],
             ['password', 'string', 'min' => 6],
-            ['role', 'in', 'range' => ['user', 'Teacher', 'Admin']],
+            ['role', 'in', 'range' => ['User']],
         ];
     }
 
@@ -33,20 +33,23 @@ class RegisterForm extends Model
     public function register(): ?User
     {
         if (!$this->validate()) {
-            return null;
+            echo "Sth went wrong!";
+            die;
         }
 
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
+        $user->password = $this->password;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->role = $this->role ?: 'user';
+        $user->role = $this->role ?: 'User';
         $user->accessToken = Yii::$app->getSecurity()->generateRandomString();
         if (!$user->save()) {
             foreach ($user->getErrors() as $attribute => $errors) {
                 foreach ($errors as $error) {
                     $this->addError($attribute, $error);
+                    echo $error;
                 }
             }
             return null;

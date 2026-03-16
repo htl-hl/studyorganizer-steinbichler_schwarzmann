@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\RegisterForm;
 use Yii;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -91,6 +92,10 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * @throws Exception
+     * @throws \yii\base\Exception
+     */
     public function actionRegister()
     {
         if (!Yii::$app->user->isGuest) {
