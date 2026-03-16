@@ -1,5 +1,6 @@
 <?php
 
+use yii\base\InvalidConfigException;
 use yii\bootstrap5\Alert;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
@@ -9,6 +10,36 @@ use yii\widgets\Pjax;
 
 $this->title = 'Subjects';
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJs(<<<JS
+document.addEventListener('click', function (event) {
+    const deleteLink = event.target.closest('.js-subject-delete');
+    if (!deleteLink) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const deleteForm = document.getElementById('delete-subject-form');
+    const taskNameLabel = document.getElementById('delete-subject-name');
+    const modalElement = document.getElementById('delete-subject-modal');
+
+    if (!deleteForm || !modalElement) {
+        return;
+    }
+
+    deleteForm.setAttribute('action', deleteLink.getAttribute('href'));
+
+    if (taskNameLabel) {
+        taskNameLabel.textContent = deleteLink.getAttribute('data-subjectname') || 'this Subject';
+    }
+
+    if (window.bootstrap && window.bootstrap.Modal) {
+        window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    }
+});
+JS
+);
 ?>
 <div class="task-index">
 
@@ -26,16 +57,18 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if (empty($subjects)) : ?>
             <?php foreach (Yii::$app->session->getAllFlashes() as $key => $message): ?>
                 <div class="col-12">
-                    <?= Alert::widget([
-                            'options' => ['class' => 'alert-' . $key],
-                            'body' => $message,
-                    ]) ?>
+                    <?php try {
+                        Alert::widget([
+                                'options' => ['class' => 'alert-' . $key],
+                                'body' => $message,
+                        ]);
+                    } catch (Throwable $e) {
+                        echo $e;
+                    } ?>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <?php foreach ($subjects
-
-                           as $s): ?>
+            <?php foreach ($subjects as $s): ?>
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -43,12 +76,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-dark"><?= Html::encode($s->id) ?></span>
                                 <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
-                                    <?= Html::a($s->icondelete(), ['subject/delete', 'id' => $s->id], [
-                                            'class' => 'btn btn-sm btn-outline-danger',
-                                            'data' => [
-                                                    'confirm' => 'Are you sure you want to delete this item?',
-                                                    'method' => 'post',
-                                            ],
+                                <?php // TODO: Eventl. mal Lehrer Fragen wegen dem Shit ?>
+                                    <?= Html::a('!Delete!', ['delete', 'id' => $s->id], [
+                                            'class' => 'btn btn-sm btn-outline-danger js-subject-delete',
+                                            'data-pjax' => '0',
+                                            'data-subjectname' => $s->name,
                                     ]) ?>
                                 <?php endif; ?>
                             </div>
@@ -58,9 +90,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php if (!empty($s->tasks)): ?>
                                 <ul class="list-group list-group-flush">
                                     <?php foreach ($s->tasks as $task): ?>
-                                        <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($s->id) || Yii::$app->user->identity->hasTask($task->id))): ?>
-                                            <li class="list-group-item"><?= Html::encode($task->description) ?></li>
-                                        <?php endif; ?>
+                                        <?php try {
+                                            if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($s->id) || Yii::$app->user->identity->hasTask($task->id))): ?>
+                                                <?= Html::a($task->title, ['view', 'id' => $task->id], ['class' => 'list-group-item list-group-item-action']) ?>
+                                            <?php else: ?>
+                                                <p class="empty-task">No tasks</p>
+                                            <?php endif;
+                                        } catch (InvalidConfigException $e) {
+                                            echo $e;
+                                        } ?>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
@@ -71,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php if (!Yii::$app->user->isGuest): ?>
                                 <div class="mb-3">
                                     <?php if (Yii::$app->user->identity->isAdmin()): ?>
-                                        <?= Html::a($s->iconupdate(), ['subject/update', 'id' => $s->id], ['class' => 'btn btn-sm btn-light']) ?>
+                                        <?= Html::a($s->iconupdate(), ['subject/update', 'id' => $s->id], ['class' => 'btn btn-sm btn-outline-secondary', 'data-pjax' => '0']) ?>
                                     <?php endif; ?>
 
                                     <?php if ((Yii::$app->user->identity->teachesSubject($s->id)) || Yii::$app->user->identity->isAdmin()): ?>
@@ -88,5 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php Pjax::end(); ?>
+
+    <?= $this->render('_deleteSubjectConfirm')?>
 
 </div>

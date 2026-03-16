@@ -128,7 +128,6 @@ class UserController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
 
-// TODO: IRGENDWAS PASST MIT DEM UPDATE UND TO TEACHER MACHEN NOCH NIT MUSS ICH ANSCHAUEN!
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -141,12 +140,11 @@ class UserController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost) {
-            // ✅ Standard Yii2 load() - TypeError wird durch beforeValidate() gefixt
+
             if ($model->load($this->request->post()) && $model->validate() && $model->save(false)) {
 
-                // ✅ Teacher + Subjects synchronisieren (wie bei CREATE)
                 if ($model->isTeacher()) {
-                    $subjectIds = $model->subjectIds ?? []; // Array durch beforeValidate() garantiert
+                    $subjectIds = $model->subjectIds ?? [];
 
                     $teacher = Teacher::findOne(['userId' => $model->id]);
                     if (!$teacher) {

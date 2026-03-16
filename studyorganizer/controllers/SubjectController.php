@@ -4,9 +4,11 @@ namespace app\controllers;
 
 use app\models\Subject;
 use app\models\SubjectSearch;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * SubjectController implements the CRUD actions for Subject model.
@@ -106,12 +108,16 @@ class SubjectController extends Controller
      * Deletes an existing Subject model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        try {
+            $this->findModel($id)->delete();
+        } catch (StaleObjectException|\Throwable $e) {
+            echo $e;
+        }
 
         return $this->redirect(['task/index']);
     }
@@ -123,7 +129,7 @@ class SubjectController extends Controller
      * @return Subject the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Subject
     {
         if (($model = Subject::findOne(['id' => $id])) !== null) {
             return $model;

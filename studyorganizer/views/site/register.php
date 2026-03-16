@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+/**@var app\models\User $model*/
+
 $this->title = 'Register';
 ?>
 <div>

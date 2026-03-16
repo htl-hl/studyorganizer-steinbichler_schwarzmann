@@ -114,10 +114,10 @@ class User extends ActiveRecord implements IdentityInterface
                 $teacher->userId = $this->id;
                 $teacher->isActive = $this->isActive;
                 if (!$teacher->save()) {
-                    Yii::error('Teacher konnte nicht erstellt werden: ' . json_encode($teacher->errors));
-                    Yii::$app->session->setFlash('danger', 'Teacher konnte nicht erstellt werden.');
+                    Yii::error('Teacher could not be created: ' . json_encode($teacher->errors));
+                    Yii::$app->session->setFlash('danger', 'Teacher could not be created');
                 } else {
-                    Yii::$app->session->setFlash('success', 'Teacher wurde erfolgreich angelegt.');
+                    Yii::$app->session->setFlash('success', 'Teacher was successfully created');
                 }
             }
         }

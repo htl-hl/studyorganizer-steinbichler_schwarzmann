@@ -32,6 +32,8 @@ use kartik\datetime\DateTimePicker;
             'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd hh:ii',
+                    'startDate' => date('Y-m-d H:i'),
+                    'todayHighlight' => true,
             ]
     ]) ?>
 
@@ -51,6 +53,7 @@ use kartik\datetime\DateTimePicker;
     <div class="form-group">
 
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Cancel', ['view', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
