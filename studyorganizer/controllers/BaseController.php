@@ -6,7 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\web\Response;
+use yii\web\ForbiddenHttpException;
 
 class BaseController extends Controller
 {
@@ -28,23 +28,18 @@ class BaseController extends Controller
 
 
     /**
-     * @return bool|Response
-     * @throws BadRequestHttpException
+     * @throws ForbiddenHttpException|BadRequestHttpException
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
-        // Cache-Block für Login/Register (falls SiteController erbt)
-        if (in_array($action->id, ['login', 'register'])) {
-            $this->disableBrowserCache();
+        if (Yii::$app->user->isGuest) {
+            Yii::$app->user->loginRequired();  // ← Automatischer Redirect!
+            return false;
         }
-
-        // ALLE anderen Actions: Guest → Login
-        if (Yii::$app->user->isGuest && !in_array($action->id, ['error'])) {
-            return $this->redirect(['site/login']);
-        }
-
         return parent::beforeAction($action);
     }
+
+
 
     public static function disableBrowserCache()
     {
