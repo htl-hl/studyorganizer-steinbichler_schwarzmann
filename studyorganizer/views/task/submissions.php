@@ -37,7 +37,9 @@ use yii\helpers\Html;
                             <h6 class="card-title mb-2"><?= Html::encode($taskUser['username']) ?></h6>
 
                             <!-- Status in eigener Zeile -->
-                            <?php if ($taskUser['isCompleted']): ?>
+                            <?php if ($taskUser['auto_submitted']):?>
+                                <span class="badge bg-danger text-dark mb-3 d-block"><i class="bi bi-check-circle me-1"></i>Expired</span>
+                            <?php elseif ($taskUser['isCompleted']): ?>
                                 <span class="badge bg-success mb-3 d-block"><i class="bi bi-check-circle me-1"></i>Submitted</span>
                             <?php else: ?>
                                 <span class="badge bg-warning text-dark mb-3 d-block"><i class="bi bi-clock me-1"></i>Pending</span>

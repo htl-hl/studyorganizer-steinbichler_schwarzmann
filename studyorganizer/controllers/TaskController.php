@@ -251,6 +251,7 @@ class TaskController extends BaseController
                 'taskId',
                 'userId',
                 'isCompleted',
+                'auto_submitted',
                 'return_document',
                 'u.username'
             ])
