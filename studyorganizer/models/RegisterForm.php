@@ -49,7 +49,6 @@ class RegisterForm extends Model
             foreach ($user->getErrors() as $attribute => $errors) {
                 foreach ($errors as $error) {
                     $this->addError($attribute, $error);
-                    echo $error;
                 }
             }
             return null;
