@@ -10,7 +10,6 @@ use Exception;
 use Throwable;
 use Yii;
 use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -18,7 +17,7 @@ use yii\web\Response;
 /**
  * TeacherController implements the CRUD actions for Teacher model.
  */
-class TeacherController extends Controller
+class TeacherController extends BaseController
 {
     /**
      * @inheritDoc

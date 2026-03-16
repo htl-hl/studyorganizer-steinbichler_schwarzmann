@@ -47,12 +47,14 @@ JS
     <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
 
     <p class="mb-4">
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->isAdmin() || Yii::$app->user->identity->teachesSubject($model->subject->id))): ?>
+        <?= Html::a('Edit', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-sm btn-outline-danger js-task-delete',
                 'confirm' => 'Are you sure you want to delete this task?',
                 'data-taskname' => $model->title,
         ]) ?>
+        <?php endif; ?>
         <?= Html::a('Back', ['index'], ['class' => 'btn btn-secondary']) ?>
     </p>
 

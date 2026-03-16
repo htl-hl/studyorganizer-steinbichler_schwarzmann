@@ -72,12 +72,17 @@ JS
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0"><?= Html::encode($s->name) ?></h5>
+                            <div class="card-title mb-0">
+                                <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
+                                <?= Html::a(Html::encode($s->name), ['subject/view', 'id' => $s->id], ['class' => 'btn btn-outline-secondary']) ?>
+                                <?php else: ?>
+                                    <?= Html::encode($s->name) ?>
+                                <?php endif; ?>
+                            </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-dark"><?= Html::encode($s->id) ?></span>
                                 <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin()): ?>
-                                <?php // TODO: Eventl. mal Lehrer Fragen wegen dem Shit ?>
-                                    <?= Html::a('!Delete!', ['delete', 'id' => $s->id], [
+                                    <?= Html::a('Delete', ['subject/delete', 'id' => $s->id], [
                                             'class' => 'btn btn-sm btn-outline-danger js-subject-delete',
                                             'data-pjax' => '0',
                                             'data-subjectname' => $s->name,
@@ -127,6 +132,6 @@ JS
 
     <?php Pjax::end(); ?>
 
-    <?= $this->render('_deleteSubjectConfirm')?>
+    <?= $this->render('_deleteSubjectConfirm') ?>
 
 </div>

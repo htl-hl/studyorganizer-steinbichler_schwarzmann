@@ -28,6 +28,14 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
 
+<?php
+// Ganz oben in main.php
+if (in_array(Yii::$app->controller->action->id, ['login', 'register'])) {
+    app\controllers\BaseController::disableBrowserCache();
+}
+?>
+
+
 <header class="border-bottom">
     <?php
     if (!Yii::$app->user->isGuest) {
@@ -50,16 +58,24 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             'linkOptions' => ['data-method' => 'post'],
         ]];
         if (!$leftNavItems == null) {
-            echo Nav::widget([
-                    'options' => ['class' => 'navbar-nav me-auto'],
-                    'items' => $leftNavItems,
-            ]);
+            try {
+                echo Nav::widget([
+                        'options' => ['class' => 'navbar-nav me-auto'],
+                        'items' => $leftNavItems,
+                ]);
+            } catch (Throwable $e) {
+                echo $e;
+            }
         }
 
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav ms-auto'],
-            'items' => $rightNavItems,
-        ]);
+        try {
+            echo Nav::widget([
+                    'options' => ['class' => 'navbar-nav ms-auto'],
+                    'items' => $rightNavItems,
+            ]);
+        } catch (Throwable $e) {
+            echo $e;
+        }
 
         NavBar::end();
     }
