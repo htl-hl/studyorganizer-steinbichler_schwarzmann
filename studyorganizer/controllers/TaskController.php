@@ -5,22 +5,26 @@ namespace app\controllers;
 use app\models\Subject;
 use app\models\Task;
 use app\models\User;
+use Exception;
+use Throwable;
 use Yii;
+use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\helpers\ArrayHelper;
+use yii\web\Response;
 
 /**
  * TaskController implements the CRUD actions for Task model.
  */
-class TaskController extends Controller
+class TaskController extends BaseController
 {
     /**
      * @inheritDoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return array_merge(
             parent::behaviors(),
@@ -49,7 +53,7 @@ class TaskController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $subjects = Subject::find()->with('tasks')->all();
 
@@ -64,7 +68,7 @@ class TaskController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -75,7 +79,8 @@ class TaskController extends Controller
      * Creates a new Task model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @param int|null $subjectId
-     * @return string|\yii\web\Response
+     * @return string|Response
+     * @throws ForbiddenHttpException|Exception
      */
     public function actionCreate(int $subjectId)
     {
@@ -85,7 +90,7 @@ class TaskController extends Controller
             !$user->isAdmin() &&
             !$user->teachesSubject($subjectId)
         ) {
-            throw new \yii\web\ForbiddenHttpException('You are not allowed to create tasks for this subject.');
+            throw new ForbiddenHttpException('You are not allowed to create tasks for this subject.');
         }
 
         $model = new Task();
@@ -111,10 +116,11 @@ class TaskController extends Controller
      * Updates an existing Task model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \yii\db\Exception
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
 
@@ -141,10 +147,10 @@ class TaskController extends Controller
      * Deletes an existing Task model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return Response
+     * @throws StaleObjectException|NotFoundHttpException|Throwable
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
         $this->findModel($id)->delete();
 
@@ -158,7 +164,7 @@ class TaskController extends Controller
      * @return Task the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Task
     {
         if (($model = Task::findOne(['id' => $id])) !== null) {
             return $model;

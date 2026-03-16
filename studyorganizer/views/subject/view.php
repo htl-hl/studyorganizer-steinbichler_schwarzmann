@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\web\YiiAsset;
-use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Subject $model */
@@ -42,29 +41,37 @@ document.addEventListener('click', function (event) {
 JS
 );
 ?>
+
 <div class="subject-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
 
-    <p>
+    <p class="mb-4">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-sm btn-outline-danger js-subject-delete',
-                'confirm' => 'Are you sure you want to delete this subject?',
                 'data-subjectname' => $model->name,
         ]) ?>
-        <?= Html::a('Back', ['index'], ['class' => 'btn btn-secondary']) ?>
+        <?= Html::a('Back', ['task/index'], ['class' => 'btn btn-secondary']) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'name',
-        ],
-    ]) ?>
+    <div class="card shadow-sm">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><?= Html::encode($model->name) ?></h5>
+            <span class="badge bg-secondary"><?= Html::encode($model->id) ?></span>
+        </div>
+
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Name:</strong> <?= Html::encode($model->name) ?>
+                </li>
+            </ul>
+        </div>
+
+    </div>
 
     <?= $this->render('_deleteConfirm') ?>
-
 
 </div>
