@@ -45,8 +45,8 @@ use yii\helpers\Html;
 
                             <?php if ($taskUser['isCompleted'] && $taskUser['return_document']): ?>
                                 <?= Html::a(
-                                        '<i class="bi bi-download me-2"></i>Download Submission',
-                                        ['download-return-doc', 'id' => $taskUser['taskId'], 'userId' => $taskUser['userId']],
+                                        '<i class="bi bi-download me-2">Download Submission</i>',
+                                        ['download-return-doc', 'taskId' => $taskUser['taskId'], 'userId' => $taskUser['userId']],
                                         [
                                                 'class' => 'btn btn-outline-primary w-100',
                                                 'title' => 'Download ' . Html::encode($taskUser['username'] . '\'s submission')

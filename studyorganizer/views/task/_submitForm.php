@@ -31,7 +31,8 @@ use yii\widgets\ActiveForm;
                             'action' => ['task/submit-return', 'id' => $model->id]
                     ]) ?>
 
-                    <?= $form->field($taskUser, 'returnDocumentFile')->fileInput([
+                    <?= $form->field($taskUser, 'returnDocumentFile')
+                    ->fileInput([
                             'accept' => '.pdf,.doc,.docx,.md',
                             'class' => 'form-control'
                     ])->label('📎 Upload your submission file') ?>
@@ -44,10 +45,7 @@ use yii\widgets\ActiveForm;
                     </div>
 
                     <div class="d-flex gap-2 mt-3">
-                        <?= Html::submitButton('📤 Submit task', [
-                                'class' => 'btn btn-success',
-                                'onclick' => 'return confirm("Are you sure? This cannot be undone!")'
-                        ]) ?>
+                        <?= Html::submitButton('📤 Submit task', ['class' => 'btn btn-success']) ?>
                         <?= Html::a('Cancel', ['view', 'id' => $model->id], [
                                 'class' => 'btn btn-secondary'
                         ]) ?>

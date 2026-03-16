@@ -75,7 +75,7 @@ use kartik\datetime\DateTimePicker;
         </div>
 
         <div class="form-text">
-            pdf, word (doc, docx), txt or markdown files (max. 10MB)
+            pdf, word (doc, docx) or markdown files
         </div>
     </div>
     <br>

@@ -22,9 +22,14 @@ class TaskUser extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'TASK_USER';
+    }
+
+    public static function primaryKey(): array
+    {
+        return ['taskId', 'userId'];
     }
 
     /**
@@ -36,8 +41,9 @@ class TaskUser extends \yii\db\ActiveRecord
             [['userId', 'taskId'], 'required'],
             [['userId', 'taskId'], 'integer'],
             [['isCompleted'], 'boolean'],
-            [['returnDocumentFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, txt, md', 'maxSize' => 10*1024*1024],
+            [['returnDocumentFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, md', 'maxSize' => 10*1024*1024],
             [['return_document'], 'safe'],
+            [['file_extension'], 'string', 'max' => 10]
         ];
     }
 
